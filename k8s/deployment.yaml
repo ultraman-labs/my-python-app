@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: my-python-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: my-python-app
@@ -14,13 +14,14 @@ spec:
     spec:
       containers:
       - name: my-python-app
-        image: cloudnine1/my-python-app:latest
+        image: your-docker-image
         ports:
         - containerPort: 5000
-        readinessProbe:
+        livenessProbe:
           httpGet:
             path: /health
             port: 5000
           initialDelaySeconds: 10
           periodSeconds: 10
-
+          failureThreshold: 3
+          timeoutSeconds: 1
