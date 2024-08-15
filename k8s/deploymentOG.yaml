@@ -23,11 +23,4 @@ spec:
             port: 5000
           initialDelaySeconds: 10
           periodSeconds: 10
-        livenessProbe:                            # Added Liveness Probe
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 10                 # Initial delay before the first check
-          periodSeconds: 10                       # Check every 10 seconds
-          failureThreshold: 3                     # Restart after 3 consecutive failures
-          timeoutSeconds: 1                       # Timeout after 1 second
+
