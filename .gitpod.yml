@@ -6,8 +6,8 @@
 
 tasks:
   - init: |
-      apt-get update > /workspace/init.log 2>&1
-      apt-get install -y kubectl >> /workspace/init.log 2>&1
+      sudo apt-get update > /workspace/init.log 2>&1
+      sudo apt-get install -y kubectl >> /workspace/init.log 2>&1
       pip install -r requirements.txt >> /workspace/init.log 2>&1
     command: python app.py
 
