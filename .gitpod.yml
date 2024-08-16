@@ -9,11 +9,12 @@ tasks:
       sudo apt-get update > /workspace/init.log 2>&1
       sudo apt-get install -y apt-transport-https ca-certificates curl >> /workspace/init.log 2>&1
       sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg >> /workspace/init.log 2>&1
-      echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list >> /workspace/init.log 2>&1
+      echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-jammy main" | sudo tee /etc/apt/sources.list.d/kubernetes.list >> /workspace/init.log 2>&1
       sudo apt-get update >> /workspace/init.log 2>&1
       sudo apt-get install -y kubectl >> /workspace/init.log 2>&1
       pip install -r requirements.txt >> /workspace/init.log 2>&1
     command: python app.py
+
 
 
 
