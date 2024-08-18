@@ -30,8 +30,8 @@ tasks:
       export PATH=$PATH:/usr/local/bin
 
   - command: |
-      # Start Minikube with Docker driver
-      minikube start --driver=docker --force || echo "Minikube failed to start."
+      # Start Minikube with Docker driver and reduced resources
+      minikube start --driver=docker --force --cpus=2 --memory=2048 || echo "Minikube failed to start."
 
       # Check Minikube status
       minikube status || echo "Minikube did not start successfully."
@@ -41,6 +41,7 @@ tasks:
 
       # Start the Flask development server
       python app.py
+
 
 
 
