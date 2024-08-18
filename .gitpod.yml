@@ -31,11 +31,18 @@ tasks:
 
   - command: |
       # Start Minikube with Docker driver and capture logs
-      minikube start --driver=docker --force > /workspace/minikube.log 2>&1 || true
+      minikube start --driver=docker --force > /workspace/minikube.log 2>&1 || echo "Minikube failed to start. Check /workspace/minikube.log for details."
+
+      # Check Minikube status and display log if failed
+      if ! minikube status; then
+          echo "Minikube did not start successfully. Here are the logs:"
+          cat /workspace/minikube.log
+      fi
 
       # Activate the virtual environment
       source venv/bin/activate
 
       # Start the Flask development server
       python app.py
+
 
