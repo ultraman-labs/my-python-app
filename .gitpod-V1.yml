@@ -25,11 +25,10 @@ tasks:
       source venv/bin/activate
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
-      # Ensure Minikube is available and add it to the PATH
-      echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
+  - command: |
+      # Ensure Minikube is available
       export PATH=$PATH:/usr/local/bin
 
-  - command: |
       # Start Minikube with Docker driver
       minikube start --driver=docker --force
 
@@ -38,3 +37,18 @@ tasks:
 
       # Start the Flask development server
       python app.py
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
