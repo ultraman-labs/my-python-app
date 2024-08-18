@@ -16,6 +16,7 @@ tasks:
       # Install minikube
       curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 > /workspace/init.log 2>&1
       sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      export PATH=$PATH:/usr/local/bin
 
       # Ensure Docker is configured for Minikube
       sudo systemctl restart docker
@@ -27,6 +28,7 @@ tasks:
       # Start Minikube with Docker driver without root privileges
       minikube start --driver=docker
       python app.py
+
 
 
 
