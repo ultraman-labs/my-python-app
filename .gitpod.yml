@@ -16,14 +16,17 @@ tasks:
       # Install minikube
       curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 >> /workspace/init.log 2>&1
       sudo install -o root -g root -m 0755 minikube-linux-amd64 /usr/local/bin/minikube
+      export PATH=$PATH:/usr/local/bin
 
       # Install Python dependencies
-      pip install -r requirements.txt >> /workspace/init.log 2>&1
+      pip install --user -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Start Minikube with Docker driver without root privileges
+      # Ensure Minikube is available
+      export PATH=$PATH:/usr/local/bin
       minikube start --driver=docker --force
       python app.py
+
 
 
 
