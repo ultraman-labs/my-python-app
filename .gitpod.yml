@@ -16,16 +16,31 @@ tasks:
       # Install minikube
       curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 >> /workspace/init.log 2>&1
       sudo install -o root -g root -m 0755 minikube-linux-amd64 /usr/local/bin/minikube
-      export PATH=$PATH:/usr/local/bin
 
-      # Install Python dependencies
-      pip install --user -r requirements.txt >> /workspace/init.log 2>&1
+      # Install Python virtual environment
+      python3 -m venv venv
+      source venv/bin/activate
+
+      # Install Python dependencies within the virtual environment
+      pip install -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
       # Ensure Minikube is available
       export PATH=$PATH:/usr/local/bin
+
+      # Verify Minikube installation
+      if ! command -v minikube &> /dev/null; then
+          echo "Minikube could not be found. Please check the installation logs."
+          exit 1
+      fi
+
+      # Start Minikube with Docker driver
       minikube start --driver=docker --force
+
+      # Activate the virtual environment and start Flask
+      source venv/bin/activate
       python app.py
+
 
 
 
