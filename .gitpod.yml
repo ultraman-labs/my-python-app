@@ -23,7 +23,7 @@ tasks:
       # Install Python dependencies
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
-  command: |
+  - command: |
       # Start Minikube with Docker driver without root privileges
       minikube start --driver=docker
       python app.py
