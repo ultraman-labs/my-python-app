@@ -14,9 +14,10 @@ tasks:
       curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" >> /workspace/init.log 2>&1
       sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-      # Install minikube
-      curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 >> /workspace/init.log 2>&1
-      sudo install -o root -g root -m 0755 minikube-linux-amd64 /usr/local/bin/minikube
+      # Install kind (Kubernetes in Docker)
+      curl -Lo ./kind "https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64" >> /workspace/init.log 2>&1
+      chmod +x ./kind
+      sudo mv ./kind /usr/local/bin/kind
 
       # Install Python virtual environment
       python3 -m venv venv
@@ -25,22 +26,22 @@ tasks:
       source venv/bin/activate
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
-      # Ensure Minikube is available and add it to the PATH
-      echo 'export PATH=$PATH:/usr/local/bin' >> ~/.bashrc
-      export PATH=$PATH:/usr/local/bin
-
   - command: |
-      # Start Minikube with Docker driver and reduced resources
-      minikube start --driver=docker --force --cpus=2 --memory=2048 || echo "Minikube failed to start."
+      # Create a kind cluster
+      kind create cluster || echo "Kind cluster creation failed."
 
-      # Check Minikube status
-      minikube status || echo "Minikube did not start successfully."
+      # Check kind cluster status
+      kubectl cluster-info --context kind-kind || echo "Kind cluster did not start successfully."
 
       # Activate the virtual environment
       source venv/bin/activate
 
+      # Apply the Kubernetes deployment file (adjust the path if needed)
+      kubectl apply -f deployment.yaml || echo "Kubernetes deployment failed."
+
       # Start the Flask development server
       python app.py
+
 
 
 
