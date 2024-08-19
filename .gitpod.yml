@@ -31,13 +31,18 @@ tasks:
       kind create cluster --name kind --config kind-config.yaml || echo "Kind cluster creation failed."
 
       # Verify the cluster is running
-      kubectl cluster-info --context kind-kind || echo "Kind cluster did not start successfully."
-
-      # Apply the Kubernetes deployment file (adjust the path if needed)
-      kubectl apply -f deployment.yaml || echo "Kubernetes deployment failed."
+      if ! kubectl cluster-info --context kind-kind; then
+        echo "Kind cluster did not start successfully."
+      else
+        # Apply the Kubernetes deployment file (adjust the path if needed)
+        if ! kubectl apply -f deployment.yaml; then
+          echo "Kubernetes deployment failed."
+        fi
+      fi
 
       # Activate the virtual environment and start the Flask development server
       source venv/bin/activate && python app.py
+
 
 
 
