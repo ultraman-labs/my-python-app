@@ -25,11 +25,15 @@ tasks:
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Try to wait for k3s to start up, but don't block the development server from starting
-      (until kubectl get nodes; do sleep 2; done && kubectl apply -f deployment.yaml) || echo "K3s or Kubernetes deployment failed."
+      # Activate the virtual environment
+      source venv/bin/activate
 
-      # Activate the virtual environment and start the Flask development server
-      source venv/bin/activate && python app.py
+      # Start the Flask development server
+      python app.py
+
+  - command: |
+      # Wait for k3s to start up, but don’t block the development server from running
+      (until kubectl get nodes; do sleep 2; done && kubectl apply -f deployment.yaml) || echo "K3s or Kubernetes deployment failed."
 
 
 
