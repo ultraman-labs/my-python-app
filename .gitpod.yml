@@ -28,7 +28,7 @@ tasks:
 
   - command: |
       # Create a kind cluster
-      kind create cluster || echo "Kind cluster creation failed."
+      kind create cluster --name kind || echo "Kind cluster creation failed."
 
       # Check kind cluster status
       kubectl cluster-info --context kind-kind || echo "Kind cluster did not start successfully."
@@ -41,6 +41,7 @@ tasks:
 
       # Start the Flask development server
       python app.py
+
 
 
 
