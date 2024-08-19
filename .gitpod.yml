@@ -27,20 +27,11 @@ tasks:
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Create a kind cluster
-      kind create cluster --name kind || echo "Kind cluster creation failed."
+      # Try to create the kind cluster with basic settings
+      kind create cluster --name kind --config kind-config.yaml || echo "Kind cluster creation failed."
 
-      # Check kind cluster status
-      kubectl cluster-info --context kind-kind || echo "Kind cluster did not start successfully."
-
-      # Activate the virtual environment
-      source venv/bin/activate
-
-      # Apply the Kubernetes deployment file (adjust the path if needed)
-      kubectl apply -f deployment.yaml || echo "Kubernetes deployment failed."
-
-      # Start the Flask development server
-      python app.py
+      # Check if the cluster was created successfully
+      kind get clusters || echo "No kind clusters found."
 
 
 
