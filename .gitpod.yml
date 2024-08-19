@@ -14,10 +14,8 @@ tasks:
       curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" >> /workspace/init.log 2>&1
       sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-      # Install kind (Kubernetes in Docker)
-      curl -Lo ./kind "https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64" >> /workspace/init.log 2>&1
-      chmod +x ./kind
-      sudo mv ./kind /usr/local/bin/kind
+      # Install k3s (Lightweight Kubernetes)
+      curl -sfL https://get.k3s.io | sh - >> /workspace/init.log 2>&1
 
       # Install Python virtual environment
       python3 -m venv venv
@@ -27,21 +25,15 @@ tasks:
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Create a kind cluster
-      kind create cluster --name kind --config kind-config.yaml || echo "Kind cluster creation failed."
+      # Wait for k3s to start up
+      until kubectl get nodes; do sleep 2; done
 
-      # Verify the cluster is running
-      if ! kubectl cluster-info --context kind-kind; then
-        echo "Kind cluster did not start successfully."
-      else
-        # Apply the Kubernetes deployment file (adjust the path if needed)
-        if ! kubectl apply -f deployment.yaml; then
-          echo "Kubernetes deployment failed."
-        fi
-      fi
+      # Apply the Kubernetes deployment file (adjust the path if needed)
+      kubectl apply -f deployment.yaml || echo "Kubernetes deployment failed."
 
       # Activate the virtual environment and start the Flask development server
       source venv/bin/activate && python app.py
+
 
 
 
