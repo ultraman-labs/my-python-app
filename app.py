@@ -15,10 +15,12 @@ def health_check():
     app.logger.info(f"Health check called. Current failure_mode: {failure_mode}")
     if failure_mode:
         app.logger.info("Health check failed. Exiting the application.")
+        app.logger.info("Attempting to call os._exit(1)")
         os._exit(1)  # Forcefully exit the process with an error status
     else:
         app.logger.info("Health check passed.")
         return jsonify({"status": "healthy"})
+
 
 @app.route('/toggle-failure', methods=['GET'])
 def toggle_failure():
