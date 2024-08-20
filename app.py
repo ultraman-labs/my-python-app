@@ -12,6 +12,7 @@ def home():
 
 @app.route('/health', methods=['GET'])
 def health_check():
+    app.logger.info(f"Health check called. Current failure_mode: {failure_mode}")
     if failure_mode:
         app.logger.info("Health check failed. Exiting the application.")
         os._exit(1)  # Forcefully exit the process with an error status
@@ -23,6 +24,7 @@ def health_check():
 def toggle_failure():
     global failure_mode
     failure_mode = not failure_mode
+    app.logger.info(f"Failure mode toggled. New failure_mode: {failure_mode}")
     return f"Failure mode is now {'on' if failure_mode else 'off'}", 200
 
 @app.route('/', methods=['POST'])
@@ -32,7 +34,3 @@ def echo():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
-
-
