@@ -21,8 +21,13 @@ tasks:
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Wait for k3s to start up before running kubectl commands
+      # Set the KUBECONFIG environment variable for kubectl
       export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+      # Add kubectl to the PATH explicitly
+      export PATH=$PATH:/usr/local/bin
+
+      # Wait for k3s to start up before running kubectl commands
       until kubectl get nodes; do sleep 2; done
 
       # Apply the Kubernetes deployment file (adjust the path if needed)
