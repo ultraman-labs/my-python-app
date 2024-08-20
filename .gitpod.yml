@@ -8,32 +8,22 @@ tasks:
   - init: |
       # Update and install necessary tools
       sudo apt-get update > /workspace/init.log 2>&1
-      sudo apt-get install -y apt-transport-https ca-certificates curl > /workspace/init.log 2>&1
-
-      # Install k3s (Lightweight Kubernetes) along with kubectl
-      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik" sh - >> /workspace/init.log 2>&1
+      sudo apt-get install -y apt-transport-https ca-certificates curl docker.io > /workspace/init.log 2>&1
 
       # Install Python virtual environment
       python3 -m venv venv
 
       # Install Python dependencies within the virtual environment
       source venv/bin/activate
-      pip install -r requirements.txt >> /workspace/init.log 2>&1
+      pip install --no-cache-dir -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Set the KUBECONFIG environment variable for kubectl
-      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      # Build the Docker image
+      docker build -t my-python-app .
 
-      # Add kubectl to the PATH explicitly
-      export PATH=$PATH:/usr/local/bin
+      # Run the Docker container with auto-restart enabled
+      docker run -d --name my-python-app --restart=always -p 5000:5000 my-python-app
 
-      # Wait for k3s to start up before running kubectl commands
-      until kubectl get nodes; do sleep 2; done
-
-      # Apply the Kubernetes deployment file (adjust the path if needed)
-      kubectl apply -f deployment.yaml || echo "K3s or Kubernetes deployment failed."
-
-  - command: |
       # Activate the virtual environment and start the Flask development server
       source venv/bin/activate && python app.py
 
