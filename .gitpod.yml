@@ -21,8 +21,15 @@ tasks:
       # Build the Docker image
       docker build -t my-python-app .
 
+      # Remove any existing container with the same name
+      docker rm -f my-python-app || true
+
       # Run the Docker container with auto-restart enabled
       docker run -d --name my-python-app --restart=always -p 5000:5000 my-python-app
+
+      # Tail the logs of the container to keep the task running
+      docker logs -f my-python-app
+
 
 
 
