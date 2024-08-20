@@ -2,13 +2,25 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Variable to control health check failure
+failure_mode = False
+
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({"msg": "BC4M"})
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy"})
+    if failure_mode:
+        return jsonify({"status": "unhealthy"}), 500
+    else:
+        return jsonify({"status": "healthy"})
+
+@app.route('/toggle-failure', methods=['GET'])
+def toggle_failure():
+    global failure_mode
+    failure_mode = not failure_mode
+    return f"Failure mode is now {'on' if failure_mode else 'off'}", 200
 
 @app.route('/', methods=['POST'])
 def echo():
@@ -17,4 +29,5 @@ def echo():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
