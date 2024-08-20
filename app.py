@@ -13,8 +13,10 @@ def home():
 @app.route('/health', methods=['GET'])
 def health_check():
     if failure_mode:
+        app.logger.info("Health check failed. Exiting the application.")
         os._exit(1)  # Forcefully exit the process with an error status
     else:
+        app.logger.info("Health check passed.")
         return jsonify({"status": "healthy"})
 
 @app.route('/toggle-failure', methods=['GET'])
@@ -30,6 +32,7 @@ def echo():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
 
 
