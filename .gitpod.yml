@@ -10,12 +10,8 @@ tasks:
       sudo apt-get update > /workspace/init.log 2>&1
       sudo apt-get install -y apt-transport-https ca-certificates curl > /workspace/init.log 2>&1
 
-      # Install kubectl
-      curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" >> /workspace/init.log 2>&1
-      sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-      # Install k3s (Lightweight Kubernetes)
-      curl -sfL https://get.k3s.io | sh - >> /workspace/init.log 2>&1
+      # Install k3s (Lightweight Kubernetes) along with kubectl
+      curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="--disable=traefik" sh - >> /workspace/init.log 2>&1
 
       # Install Python virtual environment
       python3 -m venv venv
@@ -25,15 +21,17 @@ tasks:
       pip install -r requirements.txt >> /workspace/init.log 2>&1
 
   - command: |
-      # Activate the virtual environment
-      source venv/bin/activate
+      # Wait for k3s to start up before running kubectl commands
+      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      until kubectl get nodes; do sleep 2; done
 
-      # Start the Flask development server
-      python app.py
+      # Apply the Kubernetes deployment file (adjust the path if needed)
+      kubectl apply -f deployment.yaml || echo "K3s or Kubernetes deployment failed."
 
   - command: |
-      # Wait for k3s to start up, but don’t block the development server from running
-      (until kubectl get nodes; do sleep 2; done && kubectl apply -f deployment.yaml) || echo "K3s or Kubernetes deployment failed."
+      # Activate the virtual environment and start the Flask development server
+      source venv/bin/activate && python app.py
+
 
 
 
