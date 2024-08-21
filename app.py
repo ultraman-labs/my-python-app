@@ -1,4 +1,5 @@
-import sys
+import os
+import signal
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
@@ -15,7 +16,7 @@ def health_check():
     app.logger.info(f"Health check called. Current failure_mode: {failure_mode}")
     if failure_mode:
         app.logger.info("Health check failed. Exiting the application.")
-        raise SystemExit("Exiting due to health check failure.")  # Raise SystemExit instead of sys.exit
+        os.kill(os.getpid(), signal.SIGTERM)  # Send SIGTERM signal to terminate the process
     else:
         app.logger.info("Health check passed.")
         return jsonify({"status": "healthy"})
