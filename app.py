@@ -1,11 +1,18 @@
 import os
 import signal
 from flask import Flask, request, jsonify
+import threading
+import time
 
 app = Flask(__name__)
 
-# Variable to control health check failure
-failure_mode = False
+# This function will trigger the app to terminate after 10 seconds
+def force_failure():
+    time.sleep(10)
+    os.kill(os.getpid(), signal.SIGKILL)
+
+# Start the failure thread
+threading.Thread(target=force_failure).start()
 
 @app.route('/', methods=['GET'])
 def home():
@@ -13,25 +20,7 @@ def home():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    app.logger.info(f"Health check called. Current failure_mode: {failure_mode}")
-    if failure_mode:
-        app.logger.info("Health check failed. Exiting the application.")
-        os.kill(os.getpid(), signal.SIGKILL)  # Send SIGKILL signal to forcefully terminate the process
-    else:
-        app.logger.info("Health check passed.")
-        return jsonify({"status": "healthy"})
-
-@app.route('/toggle-failure', methods=['GET'])
-def toggle_failure():
-    global failure_mode
-    failure_mode = not failure_mode
-    app.logger.info(f"Failure mode toggled. New failure_mode: {failure_mode}")
-    return f"Failure mode is now {'on' if failure_mode else 'off'}", 200
-
-@app.route('/', methods=['POST'])
-def echo():
-    data = request.get_json()
-    return jsonify(data)
+    return jsonify({"status": "healthy"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
