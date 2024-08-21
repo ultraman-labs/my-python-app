@@ -16,7 +16,7 @@ def health_check():
     app.logger.info(f"Health check called. Current failure_mode: {failure_mode}")
     if failure_mode:
         app.logger.info("Health check failed. Exiting the application.")
-        os.kill(os.getpid(), signal.SIGTERM)  # Send SIGTERM signal to terminate the process
+        os.kill(os.getpid(), signal.SIGKILL)  # Send SIGKILL signal to forcefully terminate the process
     else:
         app.logger.info("Health check passed.")
         return jsonify({"status": "healthy"})
